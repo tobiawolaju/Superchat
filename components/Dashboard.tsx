@@ -20,7 +20,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
 
   return (
     <div className="h-full bg-white flex flex-col overflow-y-auto animate-in fade-in slide-in-from-bottom duration-500">
-      <div className="w-full max-w-2xl mx-auto px-6 py-10 lg:py-16">
+      <div className="w-full max-w-2xl mx-auto px-6 py-10 lg:py-16 pb-[calc(2.5rem+env(safe-area-inset-bottom))] lg:pb-16">
         <div className="mb-10">
           <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Account</h2>
           <p className="text-sm text-slate-400 font-bold mt-1">Manage your identity and encryption keys.</p>

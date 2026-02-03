@@ -80,7 +80,7 @@ const App: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen w-full bg-white overflow-hidden text-slate-900 animate-in fade-in duration-500">
+    <div className="flex h-[100dvh] w-full bg-white overflow-hidden text-slate-900 animate-in fade-in duration-500">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-80 bg-slate-50 flex-col shrink-0 border-r border-slate-100">
         <div className="h-16 flex items-center px-6">
@@ -213,7 +213,7 @@ const App: React.FC = () => {
         {view === 'HOME' && (
           <button
             onClick={() => setView('ADD_CONTACT')}
-            className="absolute bottom-8 right-8 h-16 px-6 bg-slate-900 rounded-full flex items-center justify-center text-white active:scale-90 z-20 transition-all duration-300 hover:scale-105 hover:bg-black shadow-xl border-none"
+            className="absolute bottom-[calc(2rem+env(safe-area-inset-bottom))] right-8 h-16 px-6 bg-slate-900 rounded-full flex items-center justify-center text-white active:scale-90 z-20 transition-all duration-300 hover:scale-105 hover:bg-black shadow-xl border-none"
           >
             <span className="font-chewy text-2xl mr-2">+</span>
             <span className="font-chewy text-xl uppercase tracking-wider">New</span>
