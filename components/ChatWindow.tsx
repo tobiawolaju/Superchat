@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Contact, UserProfile, Message } from '../types';
-import { encryptMessage, decryptMessage } from '../services/crypto';
+import { encryptMessage } from '../services/crypto';
 import { rtdb, getChatPath } from '../services/db';
 import { AvatarDisplay } from './Avatar';
 import { Sticker } from './Sticker';
-import { useLongPress } from '../hooks/useLongPress';
 import { MessageOptionsMenu } from './MessageOptionsMenu';
+import { MessageItem } from './MessageItem';
+
+import './ChatWindow.css';
 
 const EMOJI_COUNT = 40;
 
@@ -94,97 +96,49 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
   };
 
   return (
-    <div className="flex flex-col h-full bg-white animate-in slide-in-from-right duration-500">
+    <div className="chat-window animate-in slide-in-from-right">
       {!hideHeader && (
-        <div className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-50 sticky top-0 z-10 shrink-0">
-          <div className="flex items-center gap-4">
-            <button onClick={onBack} className="lg:hidden p-2 -ml-2 hover:bg-slate-50 rounded-full text-slate-400 transition-colors">
+        <div className="chat-header">
+          <div className="chat-header-left">
+            <button onClick={onBack} className="back-button">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <AvatarDisplay id={contact.id} username={contact.username} className="w-10 h-10" />
-            <div>
-              <h3 className="font-black text-slate-900 leading-tight text-sm lg:text-base">{contact.username}</h3>
-              <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">End-to-end Hashed</p>
+            <div className="chat-header-info">
+              <h3>{contact.username}</h3>
+              <p className="chat-header-subtitle">End-to-end Hashed</p>
             </div>
           </div>
         </div>
       )}
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 lg:px-12 py-8 space-y-6 bg-white">
+      <div ref={scrollRef} className="messages-container">
         {messages.map((msg, i) => {
           const isMe = msg.senderId === user.id;
-          const decrypted = decryptMessage(msg.content, contact.hashingKey);
-          const isEmoji = decrypted.startsWith('EMOJI:');
-          const emojiIndex = isEmoji ? parseInt(decrypted.split(':')[1], 10) : -1;
-
           const nextMsg = messages[i + 1];
           const isLastInGroup = !nextMsg || nextMsg.senderId !== msg.senderId;
 
           return (
-            <div key={msg.id || i} className={`flex items-end gap-3 ${isMe ? 'flex-row-reverse' : ''} mb-2`}>
-              <div className={`shrink-0 ${isLastInGroup ? 'opacity-100' : 'opacity-0'} w-8 h-8`}>
-                <AvatarDisplay id={isMe ? user.id : contact.id} username={isMe ? user.username : contact.username} className="w-8 h-8" />
-              </div>
-              <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
-                {isEmoji ? (
-                  <div
-                    className="p-2 animate-in zoom-in duration-300 transform transition-transform hover:scale-110 cursor-pointer"
-                    onDoubleClick={() => setSelectedMessage(msg)}
-                    {...useLongPress(() => setSelectedMessage(msg))}
-                  >
-                    <Sticker index={emojiIndex} className="w-28 h-28 lg:w-44 lg:h-44" />
-                  </div>
-                ) : (
-                  <div
-                    className={`px-5 py-3 rounded-3xl transition-colors cursor-pointer select-none ${isMe
-                      ? `bg-slate-900 text-white rounded-br-none hover:bg-black`
-                      : `bg-slate-100 text-slate-800 rounded-bl-none hover:bg-slate-200`
-                      }`}
-                    onDoubleClick={() => setSelectedMessage(msg)}
-                    {...useLongPress(() => setSelectedMessage(msg))}
-                  >
-                    <p className="text-sm lg:text-base font-bold leading-relaxed whitespace-pre-wrap">{decrypted}</p>
-                  </div>
-                )}
-
-                {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                  <div className={`flex flex-wrap gap-1 mt-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    {Object.entries(msg.reactions).map(([emoji, users]) => (
-                      <button
-                        key={emoji}
-                        onClick={() => {
-                          setSelectedMessage(msg);
-                          handleReact(emoji);
-                        }}
-                        className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs border transition-all ${(users as string[]).includes(user.id)
-                          ? 'bg-slate-900 border-slate-900 text-white'
-                          : 'bg-white border-slate-100 text-slate-600 hover:border-slate-300'
-                          }`}
-                      >
-                        <span className="text-sm">{emoji}</span>
-                        <span className="font-black text-[10px]">{(users as string[]).length}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {isLastInGroup && (
-                  <span className="text-[8px] font-black text-slate-300 mt-1 uppercase tracking-widest">
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                )}
-              </div>
-            </div>
+            <MessageItem
+              key={msg.id || i}
+              msg={msg}
+              user={user}
+              contact={contact}
+              isMe={isMe}
+              isLastInGroup={isLastInGroup}
+              onSelect={setSelectedMessage}
+              onReact={handleReact}
+            />
           );
         })}
       </div>
 
-      <div className="bg-white shrink-0 border-t border-slate-50 pb-safe">
+      <div className="chat-footer">
         {showStickers && (
-          <div className="p-4 bg-slate-50 border-t border-slate-100 animate-in slide-in-from-bottom duration-300">
-            <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-3 max-h-[280px] overflow-y-auto no-scrollbar py-2">
+          <div className="sticker-panel animate-in slide-in-from-bottom">
+            <div className="sticker-grid no-scrollbar">
               {Array.from({ length: EMOJI_COUNT }).map((_, idx) => {
                 const num = idx + 1;
                 return (
@@ -192,7 +146,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
                     key={num}
                     type="button"
                     onClick={() => sendEmoji(num)}
-                    className="aspect-square flex items-center justify-center p-1.5 bg-white rounded-2xl hover:bg-slate-100 hover:shadow-sm transition-all active:scale-90 border border-slate-100 overflow-hidden"
+                    className="sticker-select-button"
                   >
                     <Sticker index={num} className="w-full h-full" />
                   </button>
@@ -202,12 +156,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
           </div>
         )}
 
-        <div className="p-4 lg:p-6 max-w-5xl mx-auto w-full">
-          <form onSubmit={handleSend} className="flex items-center gap-3 bg-slate-50 rounded-full px-5 py-2 border border-slate-100 focus-within:border-slate-300 focus-within:bg-white transition-all">
+        <div className="input-container">
+          <form onSubmit={handleSend} className="message-form">
             <button
               type="button"
               onClick={() => setShowStickers(!showStickers)}
-              className={`p-2 rounded-full transition-all ${showStickers ? 'text-slate-900 bg-white rotate-12' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`sticker-toggle-button ${showStickers ? 'active' : ''}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -218,14 +172,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Secure hashed message..."
-              className="flex-1 bg-transparent border-none py-2 text-slate-900 focus:outline-none placeholder-slate-400 font-bold text-sm lg:text-base"
+              className="message-input"
             />
             <button
               type="submit"
               disabled={!input.trim()}
-              className="w-10 h-10 bg-slate-900 hover:bg-black rounded-full flex items-center justify-center text-white disabled:opacity-20 transition-all active:scale-90 shrink-0 border-none"
+              className="send-button"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-90" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="send-icon" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
               </svg>
             </button>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Contact } from '../types';
 import { AvatarDisplay } from './Avatar';
@@ -38,9 +37,9 @@ const AddFriend: React.FC<AddFriendProps> = ({ onAdd, onBack }) => {
         <form onSubmit={handleSubmit} className="space-y-10">
           <section className="flex flex-col sm:flex-row items-center gap-8 p-6 lg:p-8 bg-slate-100 rounded-none border-none">
             <div className="shrink-0">
-               <AvatarDisplay id={address || 'temp'} username={username || '?'} className="w-24 h-24 text-4xl" />
+              <AvatarDisplay id={address || 'temp'} username={username || '?'} className="w-24 h-24 text-4xl" />
             </div>
-            
+
             <div className="flex-1 text-center sm:text-left min-w-0">
               <h4 className="font-black text-slate-800 text-xl mb-1 truncate">{username || 'Friend Alias'}</h4>
               <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Deterministic Profile Icon</p>
@@ -58,7 +57,7 @@ const AddFriend: React.FC<AddFriendProps> = ({ onAdd, onBack }) => {
                 className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-mono text-sm text-slate-900 font-bold"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Local Alias</label>
               <input

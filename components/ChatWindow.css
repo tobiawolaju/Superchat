@@ -1,0 +1,230 @@
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--white);
+}
+
+.chat-header {
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-6);
+    background-color: var(--white);
+    border-bottom: 1px solid var(--slate-50);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.back-button {
+    padding: var(--spacing-2);
+    margin-left: -0.5rem;
+    border-radius: 9999px;
+    color: var(--slate-400);
+}
+
+.back-button:hover {
+    background-color: var(--slate-50);
+}
+
+@media (min-width: 1024px) {
+    .back-button {
+        display: none;
+    }
+}
+
+.chat-header-info h3 {
+    font-weight: 900;
+    color: var(--slate-900);
+    line-height: 1.25;
+    font-size: 0.875rem;
+}
+
+@media (min-width: 1024px) {
+    .chat-header-info h3 {
+        font-size: 1rem;
+    }
+}
+
+.chat-header-subtitle {
+    font-size: 9px;
+    color: var(--slate-400);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-8) var(--spacing-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    background-color: var(--white);
+}
+
+@media (min-width: 1024px) {
+    .messages-container {
+        padding-left: var(--spacing-12);
+        padding-right: var(--spacing-12);
+    }
+}
+
+.chat-footer {
+    background-color: var(--white);
+    flex-shrink: 0;
+    border-top: 1px solid var(--slate-50);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.sticker-panel {
+    padding: var(--spacing-4);
+    background-color: var(--slate-50);
+    border-top: 1px solid var(--slate-100);
+}
+
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--spacing-3);
+    max-height: 280px;
+    overflow-y: auto;
+    padding: var(--spacing-2) 0;
+}
+
+@media (min-width: 640px) {
+    .sticker-grid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 768px) {
+    .sticker-grid {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+}
+
+.sticker-select-button {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem;
+    background-color: var(--white);
+    border-radius: 1rem;
+    border: 1px solid var(--slate-100);
+    overflow: hidden;
+}
+
+.sticker-select-button:hover {
+    background-color: var(--slate-100);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.sticker-select-button:active {
+    transform: scale(0.9);
+}
+
+.input-container {
+    padding: var(--spacing-4);
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+    .input-container {
+        padding: var(--spacing-6);
+    }
+}
+
+.message-form {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    background-color: var(--slate-50);
+    border-radius: 9999px;
+    padding: 0.5rem var(--spacing-5);
+    border: 1px solid var(--slate-100);
+    transition: all var(--transition-fast);
+}
+
+.message-form:focus-within {
+    border-color: var(--slate-300);
+    background-color: var(--white);
+}
+
+.sticker-toggle-button {
+    padding: var(--spacing-2);
+    border-radius: 9999px;
+    color: var(--slate-400);
+}
+
+.sticker-toggle-button:hover {
+    color: var(--slate-600);
+}
+
+.sticker-toggle-button.active {
+    color: var(--slate-900);
+    background-color: var(--white);
+    transform: rotate(12deg);
+}
+
+.message-input {
+    flex: 1;
+    background: transparent;
+    padding: var(--spacing-2) 0;
+    color: var(--slate-900);
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.message-input::placeholder {
+    color: var(--slate-400);
+}
+
+@media (min-width: 1024px) {
+    .message-input {
+        font-size: 1rem;
+    }
+}
+
+.send-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--slate-900);
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    flex-shrink: 0;
+}
+
+.send-button:hover {
+    background-color: var(--black);
+}
+
+.send-button:disabled {
+    opacity: 0.2;
+}
+
+.send-button:active {
+    transform: scale(0.9);
+}
+
+.send-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    transform: rotate(90deg);
+}

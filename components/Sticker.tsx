@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import './Sticker.css';
 
 interface StickerProps {
   index: number;
@@ -30,18 +30,18 @@ export const Sticker: React.FC<StickerProps> = ({ index, className = '' }) => {
 
   if (hasError) {
     return (
-      <div className={`inline-flex items-center justify-center bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl ${className}`} title={`Missing sticker: ${index}`}>
-        <span className="text-slate-300 font-chewy text-xl select-none">?</span>
+      <div className={`sticker-error ${className}`} title={`Missing sticker: ${index}`}>
+        <span className="sticker-error-icon font-chewy">?</span>
       </div>
     );
   }
 
   return (
-    <div className={`inline-flex items-center justify-center overflow-hidden ${className}`}>
+    <div className={`sticker-container ${className}`}>
       <img
         src={src}
         alt={`Sticker ${index}`}
-        className="w-full h-full object-contain drop-shadow-md hover:scale-110 transition-transform duration-200"
+        className="sticker-image"
         loading="lazy"
         onError={handleError}
       />
