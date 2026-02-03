@@ -1,0 +1,7 @@
+{
+  "name": "Super Chat",
+  "description": "A high-performance, real-time chat application with hashed end-to-end messaging using shared keys and Firebase-style real-time updates.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
