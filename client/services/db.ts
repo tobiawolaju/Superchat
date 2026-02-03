@@ -2,7 +2,7 @@
 import { Message } from '../types';
 
 /**
- * SuperChat Mock RTDB Service.
+ * Super Yap Mock RTDB Service.
  * Mimics Firebase RTDB behavior using LocalStorage for persistence
  * and BroadcastChannel for cross-tab real-time communication.
  */

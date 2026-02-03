@@ -1,5 +1,5 @@
 // Minimal Service Worker for PWA installation requirements
-const CACHE_NAME = 'superchat-v1';
+const CACHE_NAME = 'super-yap-v1';
 const ASSETS = [
     '/',
     '/index.html',

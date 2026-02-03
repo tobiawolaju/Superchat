@@ -21,7 +21,7 @@ const App: React.FC = () => {
       setIsSplashVisible(false);
     }, 2000);
 
-    const savedUser = localStorage.getItem('super_chat_user');
+    const savedUser = localStorage.getItem('super_yap_user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     } else {
@@ -31,11 +31,11 @@ const App: React.FC = () => {
         avatar: 'robohash',
         hashingKey: 'master_key_' + Math.random().toString(36).substring(7)
       };
-      localStorage.setItem('super_chat_user', JSON.stringify(newUser));
+      localStorage.setItem('super_yap_user', JSON.stringify(newUser));
       setUser(newUser);
     }
 
-    const savedContacts = localStorage.getItem('super_chat_contacts');
+    const savedContacts = localStorage.getItem('super_yap_contacts');
     if (savedContacts) {
       setContacts(JSON.parse(savedContacts));
     }
@@ -74,14 +74,14 @@ const App: React.FC = () => {
 
   const saveContacts = (newContacts: Contact[]) => {
     setContacts(newContacts);
-    localStorage.setItem('super_chat_contacts', JSON.stringify(newContacts));
+    localStorage.setItem('super_yap_contacts', JSON.stringify(newContacts));
   };
 
   const updateProfile = (updates: Partial<UserProfile>) => {
     if (!user) return;
     const updatedUser = { ...user, ...updates };
     setUser(updatedUser);
-    localStorage.setItem('super_chat_user', JSON.stringify(updatedUser));
+    localStorage.setItem('super_yap_user', JSON.stringify(updatedUser));
   };
 
   const handleAddContact = (contact: Contact) => {
@@ -101,7 +101,7 @@ const App: React.FC = () => {
     return (
       <div className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-white animate-out fade-out duration-700 fill-mode-forwards">
         <h1 className="text-7xl font-chewy font-black text-slate-900 tracking-tight animate-in zoom-in-75 duration-500 uppercase">
-          SUPER CHAT
+          SUPER YAP
         </h1>
       </div>
     );
@@ -115,7 +115,7 @@ const App: React.FC = () => {
       <aside className="hidden lg:flex w-80 bg-slate-50 flex-col shrink-0 border-r border-slate-100">
         <div className="h-16 flex items-center px-6">
           <button onClick={() => setView('HOME')} className="font-chewy text-2xl text-slate-900 tracking-wide">
-            Super Chat
+            Super Yap
           </button>
         </div>
 
@@ -159,7 +159,7 @@ const App: React.FC = () => {
               </button>
             )}
             <div>
-              {view === 'HOME' && <h1 className="font-chewy text-2xl text-slate-900">Super Chat</h1>}
+              {view === 'HOME' && <h1 className="font-chewy text-2xl text-slate-900">Super Yap</h1>}
               {view === 'CHAT' && activeContact && (
                 <div className="flex items-center gap-3">
                   <AvatarDisplay id={activeContact.id} username={activeContact.username} className="w-8 h-8" />
