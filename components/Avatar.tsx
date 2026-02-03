@@ -1,4 +1,3 @@
-import React from 'react';
 import './Avatar.css';
 
 export const EMOJI_COUNT = 40;

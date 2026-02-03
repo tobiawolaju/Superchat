@@ -1,7 +1,7 @@
+
 import React, { useState } from 'react';
 import { UserProfile } from '../types';
 import { AvatarDisplay } from './Avatar';
-import './Dashboard.css';
 
 interface DashboardProps {
   user: UserProfile;
@@ -19,58 +19,58 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
   };
 
   return (
-    <div className="dashboard-container animate-in fade-in slide-in-from-bottom">
-      <div className="dashboard-content">
-        <div className="dashboard-header">
-          <h2 className="dashboard-title">Account</h2>
-          <p className="dashboard-subtitle">Manage your identity and encryption keys.</p>
+    <div className="h-full bg-white flex flex-col overflow-y-auto animate-in fade-in slide-in-from-bottom duration-500">
+      <div className="w-full max-w-2xl mx-auto px-6 py-10 lg:py-16">
+        <div className="mb-10">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Account</h2>
+          <p className="text-sm text-slate-400 font-bold mt-1">Manage your identity and encryption keys.</p>
         </div>
 
-        <div className="dashboard-stack">
-          <section className="profile-section">
-            <div className="profile-avatar">
+        <div className="space-y-10">
+          <section className="flex flex-col sm:flex-row items-center gap-8 p-6 lg:p-8 bg-slate-100 rounded-none border-none">
+            <div className="relative group shrink-0">
               <AvatarDisplay id={user.id} username={user.username} className="w-24 h-24 text-4xl" />
             </div>
 
-            <div className="profile-info">
-              <h4 className="profile-name">{user.username}</h4>
-              <p className="profile-label">Permanent Identity Image</p>
-              <p className="profile-desc">Profile pictures are automatically generated from your Public Key.</p>
+            <div className="flex-1 text-center sm:text-left min-w-0">
+              <h4 className="font-black text-slate-800 text-xl mb-1 truncate">{user.username}</h4>
+              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Permanent Identity Image</p>
+              <p className="mt-2 text-[10px] text-slate-400 font-medium">Profile pictures are automatically generated from your Public Key.</p>
             </div>
           </section>
 
-          <div className="settings-grid">
-            <div className="input-group">
-              <label className="input-label">Display Alias</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Display Alias</label>
               <input
                 type="text"
                 value={user.username}
                 onChange={(e) => onUpdate({ username: e.target.value })}
-                className="input-field"
+                className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-bold text-base text-slate-700 focus:bg-slate-200"
               />
             </div>
-            <div className="input-group">
-              <label className="input-label">Master Hash Key</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Master Hash Key</label>
               <input
                 type="password"
                 value={user.hashingKey}
                 onChange={(e) => onUpdate({ hashingKey: e.target.value })}
-                className="input-field"
+                className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-bold text-base text-slate-700 focus:bg-slate-200"
               />
             </div>
           </div>
 
-          <div className="key-section">
-            <div className="key-stack">
-              <div>
-                <label className="profile-label" style={{ color: 'var(--slate-900)', marginBottom: '0.5rem', display: 'block' }}>Public Key</label>
-                <code className="key-display">
+          <div className="p-8 bg-slate-100 rounded-none border-none overflow-hidden">
+            <div className="flex flex-col gap-5">
+              <div className="min-w-0">
+                <label className="text-[10px] font-black text-slate-900 uppercase tracking-widest block mb-2">Public Key</label>
+                <code className="text-[11px] font-mono text-slate-900 font-black break-all block bg-white p-3 rounded-none border-none">
                   {user.id}
                 </code>
               </div>
               <button
                 onClick={copyAddress}
-                className={`copy-button ${copied ? 'copy-button-success' : ''}`}
+                className={`w-full lg:w-max px-8 py-3 rounded-full font-black transition-all flex items-center justify-center gap-3 text-sm border-none ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-black shadow-none'}`}
               >
                 {copied ? 'Copied' : 'Copy Key'}
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,7 +82,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
 
           <button
             onClick={onBack}
-            className="confirm-button"
+            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-black py-4 rounded-full transition-all active:scale-[0.98] uppercase tracking-widest text-xs border-none"
           >
             Confirm Changes
           </button>
