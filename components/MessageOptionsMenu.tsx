@@ -1,5 +1,4 @@
 import React from 'react';
-import './MessageOptionsMenu.css';
 
 interface MessageOptionsMenuProps {
     onReact: (emoji: string) => void;
@@ -17,20 +16,20 @@ export const MessageOptionsMenu: React.FC<MessageOptionsMenuProps> = ({
     isMe
 }) => {
     return (
-        <div className="options-menu-overlay animate-in fade-in" onClick={onClose}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
             <div
-                className="options-menu-content animate-in zoom-in"
+                className="bg-white rounded-3xl shadow-2xl p-6 w-full max-w-xs animate-in zoom-in-95 duration-200"
                 onClick={e => e.stopPropagation()}
             >
-                <div className="options-menu-stack">
-                    <div className="options-menu-section">
-                        <p className="options-menu-label">React</p>
-                        <div className="reactions-grid">
+                <div className="space-y-6">
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">React</p>
+                        <div className="grid grid-cols-6 gap-2">
                             {REACTION_EMOJIS.map(emoji => (
                                 <button
                                     key={emoji}
                                     onClick={() => onReact(emoji)}
-                                    className="reaction-button"
+                                    className="text-2xl hover:scale-125 transition-transform active:scale-95 p-1"
                                 >
                                     {emoji}
                                 </button>
@@ -38,12 +37,13 @@ export const MessageOptionsMenu: React.FC<MessageOptionsMenuProps> = ({
                         </div>
                     </div>
 
-                    <div className="options-menu-divider" />
+                    <div className="h-px bg-slate-100" />
 
-                    <div className="options-menu-section">
+                    <div className="space-y-2">
                         <button
                             onClick={onDelete}
-                            className={`action-button ${isMe ? 'action-button-delete' : 'action-button-disabled'}`}
+                            className={`w-full py-4 px-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm uppercase tracking-widest transition-colors ${isMe ? 'bg-red-50 text-red-500 hover:bg-red-100' : 'bg-slate-50 text-slate-400 cursor-not-allowed opacity-50'
+                                }`}
                             disabled={!isMe}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,12 +51,12 @@ export const MessageOptionsMenu: React.FC<MessageOptionsMenuProps> = ({
                             </svg>
                             Delete Message
                         </button>
-                        {!isMe && <p className="action-info-text">Only your own messages can be deleted</p>}
+                        {!isMe && <p className="text-[9px] text-center text-slate-400 font-bold italic">Only your own messages can be deleted</p>}
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="cancel-button"
+                        className="w-full py-3 text-slate-500 font-bold text-sm hover:text-slate-900 transition-colors uppercase tracking-widest"
                     >
                         Cancel
                     </button>
