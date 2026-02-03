@@ -2,6 +2,8 @@
 import React from 'react';
 import { Contact } from '../types';
 import { AvatarDisplay } from './Avatar';
+import { formatTimeAgo } from '../services/utils';
+import { decryptMessage } from '../services/crypto';
 
 interface ChatListProps {
   contacts: Contact[];
@@ -11,6 +13,20 @@ interface ChatListProps {
 }
 
 const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, activeContactId, isMobile }) => {
+  const renderMessagePreview = (contact: Contact) => {
+    if (!contact.lastMessage) return contact.id.substring(0, 16) + '...';
+
+    let content = contact.lastMessage;
+    // Decrypt if it's not a special type
+    if (!content.startsWith('EMOJI:') && !content.startsWith('STICKER:')) {
+      content = decryptMessage(content, contact.hashingKey);
+    } else if (content.startsWith('EMOJI:')) {
+      content = 'Sent a sticker';
+    }
+
+    return content;
+  };
+
   return (
     <div className={`flex flex-col ${isMobile ? 'p-3' : 'gap-2'}`}>
       {!isMobile && (
@@ -42,9 +58,14 @@ const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, activeContac
               <p className={`text-base font-black truncate ${activeContactId === contact.id && !isMobile ? 'text-white' : 'text-slate-900'}`}>
                 {contact.username}
               </p>
+              {contact.lastTimestamp && (
+                <span className={`text-[10px] font-black uppercase tracking-tighter shrink-0 ml-2 ${activeContactId === contact.id && !isMobile ? 'text-white/50' : 'text-slate-400'}`}>
+                  {formatTimeAgo(contact.lastTimestamp)}
+                </span>
+              )}
             </div>
             <p className={`text-xs font-bold truncate opacity-80 ${activeContactId === contact.id && !isMobile ? 'text-white/60' : 'text-slate-400'}`}>
-              {contact.id.substring(0, 16)}...
+              {renderMessagePreview(contact)}
             </p>
           </div>
         </button>

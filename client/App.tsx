@@ -7,6 +7,7 @@ import ChatWindow from './components/ChatWindow';
 import Dashboard from './components/Dashboard';
 import AddFriend from './components/AddFriend';
 import { AvatarDisplay } from './components/Avatar';
+import { rtdb, getChatPath } from './services/db';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -41,6 +42,35 @@ const App: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!user || contacts.length === 0) return;
+
+    const unsubscribes = contacts.map(contact => {
+      const chatPath = getChatPath(user.id, contact.id);
+      return rtdb.onValue(chatPath, (messages) => {
+        if (messages && messages.length > 0) {
+          const lastMsg = messages[messages.length - 1];
+          setContacts(prev => prev.map(c => {
+            if (c.id === contact.id) {
+              return {
+                ...c,
+                lastMessage: lastMsg.content,
+                lastTimestamp: lastMsg.timestamp
+              };
+            }
+            return c;
+          }));
+        }
+      });
+    });
+
+    return () => unsubscribes.forEach(unsub => unsub());
+  }, [user?.id, contacts.length]);
+
+  const sortedContacts = [...contacts].sort((a, b) => {
+    return (b.lastTimestamp || 0) - (a.lastTimestamp || 0);
+  });
 
   const saveContacts = (newContacts: Contact[]) => {
     setContacts(newContacts);
@@ -91,7 +121,7 @@ const App: React.FC = () => {
 
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <ChatList
-            contacts={contacts}
+            contacts={sortedContacts}
             onChatClick={openChat}
             activeContactId={activeContact?.id}
             isMobile={false}
@@ -160,7 +190,7 @@ const App: React.FC = () => {
             <div className="h-full flex flex-col">
               <div className="lg:hidden flex-1 overflow-y-auto">
                 <ChatList
-                  contacts={contacts}
+                  contacts={sortedContacts}
                   onChatClick={openChat}
                   activeContactId={activeContact?.id}
                   isMobile={true}
