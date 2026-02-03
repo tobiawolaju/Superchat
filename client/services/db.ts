@@ -11,7 +11,7 @@ class MockRTDB {
   private listeners: Map<string, ((data: any) => void)[]> = new Map();
 
   constructor() {
-    this.channel = new BroadcastChannel('super_chat_rtdb');
+    this.channel = new BroadcastChannel('super_yap_rtdb');
     this.channel.onmessage = (event) => {
       const { path, data } = event.data;
       const pathListeners = this.listeners.get(path);
