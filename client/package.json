@@ -1,5 +1,5 @@
 {
-  "name": "super-yap",
+  "name": "super-chat",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "firebase": "^11.2.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

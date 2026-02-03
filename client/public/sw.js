@@ -1,6 +1,8 @@
-const CACHE_NAME = 'super-yap-v2';
+// Minimal Service Worker for PWA installation requirements
+const CACHE_NAME = 'superchat-v1';
 const ASSETS = [
     '/',
+    '/index.html',
     '/logo.png',
     '/manifest.json'
 ];
@@ -9,20 +11,6 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(ASSETS);
-        })
-    );
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
         })
     );
 });

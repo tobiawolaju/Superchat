@@ -2,7 +2,7 @@
 import { Message } from '../types';
 
 /**
- * Super Yap Mock RTDB Service.
+ * SuperChat Mock RTDB Service.
  * Mimics Firebase RTDB behavior using LocalStorage for persistence
  * and BroadcastChannel for cross-tab real-time communication.
  */
@@ -11,7 +11,7 @@ class MockRTDB {
   private listeners: Map<string, ((data: any) => void)[]> = new Map();
 
   constructor() {
-    this.channel = new BroadcastChannel('super_yap_rtdb');
+    this.channel = new BroadcastChannel('super_chat_rtdb');
     this.channel.onmessage = (event) => {
       const { path, data } = event.data;
       const pathListeners = this.listeners.get(path);

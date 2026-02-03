@@ -1,6 +1,6 @@
 {
-    "name": "Super Yap",
-    "short_name": "Super Yap",
+    "name": "Superchat",
+    "short_name": "Superchat",
     "description": "Fast, Hashed, and Minimalist Chat",
     "start_url": "/",
     "display": "standalone",
