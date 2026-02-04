@@ -1,7 +1,7 @@
 {
-    "name": "SuperYap",
-    "short_name": "SuperYap",
-    "description": "Fast, Hashed, and Minimalist Messaging",
+    "name": "Superchat",
+    "short_name": "Superchat",
+    "description": "Fast, Hashed, and Minimalist Chat",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

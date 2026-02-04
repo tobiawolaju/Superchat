@@ -160,7 +160,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
         )}
 
         <div className="p-4 lg:p-6 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:pb-6 max-w-5xl mx-auto w-full">
-          <form onSubmit={handleSend} className="flex items-center gap-3 bg-slate-50 rounded-full px-5 py-2 border border-slate-100 focus-within:border-slate-300 focus-within:bg-white transition-all">
+          <form onSubmit={handleSend} className="flex items-center gap-3 bg-slate-50 rounded-full px-5 py-2 border border-slate-100 focus-within:border-slate-300 focus-within:bg-white focus-within:shadow-sm focus-within:scale-[1.01] transition-all duration-300">
             <button
               type="button"
               onClick={() => setShowStickers(!showStickers)}

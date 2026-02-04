@@ -40,7 +40,7 @@ const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, activeContac
         <button
           key={contact.id}
           onClick={() => onChatClick(contact)}
-          className={`group flex items-center gap-4 p-4 rounded-full transition-all relative ${activeContactId === contact.id && !isMobile
+          className={`group flex items-center gap-4 p-4 rounded-full transition-all relative animate-in fade-in slide-in-from-left-4 duration-300 fill-mode-forwards ${activeContactId === contact.id && !isMobile
             ? 'bg-slate-900 text-white shadow-none'
             : 'bg-white hover:bg-slate-200 text-slate-600 border-none'
             }`}

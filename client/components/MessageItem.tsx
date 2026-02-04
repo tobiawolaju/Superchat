@@ -31,7 +31,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     const longPressProps = useLongPress(() => onSelect(msg));
 
     return (
-        <div className={`flex items-end gap-3 ${isMe ? 'flex-row-reverse' : ''} mb-2`}>
+        <div className={`flex items-end gap-3 ${isMe ? 'flex-row-reverse' : ''} mb-2 animate-in slide-in-from-bottom-4 fade-in duration-300 ease-out fill-mode-forwards`}>
             <div className={`shrink-0 ${isLastInGroup ? 'opacity-100' : 'opacity-0'} w-8 h-8`}>
                 <AvatarDisplay
                     id={isMe ? user.id : contact.id}
@@ -50,7 +50,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     </div>
                 ) : (
                     <div
-                        className={`px-5 py-3 rounded-3xl transition-colors cursor-pointer select-none ${isMe
+                        className={`px-5 py-3 rounded-3xl transition-all cursor-pointer select-none animate-in zoom-in-95 duration-200 ${isMe
                             ? `bg-slate-900 text-white rounded-br-none hover:bg-black`
                             : `bg-slate-100 text-slate-800 rounded-bl-none hover:bg-slate-200`
                             }`}
