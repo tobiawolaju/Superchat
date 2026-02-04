@@ -99,7 +99,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
   };
 
   return (
-    <div className="flex flex-col h-full bg-white animate-super-slide">
+    <div className="flex flex-col h-full bg-white animate-in slide-in-from-right duration-500">
       {!hideHeader && (
         <div className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-50 sticky top-0 z-10 shrink-0">
           <div className="flex items-center gap-4">
@@ -117,7 +117,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
         </div>
       )}
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 lg:px-12 py-8 space-y-6 bg-white no-scrollbar">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 lg:px-12 py-8 space-y-6 bg-white">
         {messages.map((msg, i) => {
           const isMe = msg.senderId === user.id;
           const nextMsg = messages[i + 1];
@@ -140,7 +140,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
 
       <div className="bg-white shrink-0 border-t border-slate-50 pb-safe">
         {showStickers && (
-          <div className="p-4 bg-slate-50 border-t border-slate-100 animate-super-pop origin-bottom">
+          <div className="p-4 bg-slate-50 border-t border-slate-100 animate-in slide-in-from-bottom duration-300">
             <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-3 max-h-[280px] overflow-y-auto no-scrollbar py-2">
               {Array.from({ length: EMOJI_COUNT }).map((_, idx) => {
                 const num = idx + 1;

@@ -31,7 +31,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
     const longPressProps = useLongPress(() => onSelect(msg));
 
     return (
-        <div className={`flex items-end gap-3 ${isMe ? 'flex-row-reverse' : ''} mb-2 animate-super-slide`}>
+        <div className={`flex items-end gap-3 ${isMe ? 'flex-row-reverse' : ''} mb-2`}>
             <div className={`shrink-0 ${isLastInGroup ? 'opacity-100' : 'opacity-0'} w-8 h-8`}>
                 <AvatarDisplay
                     id={isMe ? user.id : contact.id}
@@ -42,7 +42,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[80%]`}>
                 {isEmoji ? (
                     <div
-                        className="p-2 animate-super-pop duration-300 transform transition-transform hover:scale-110 cursor-pointer"
+                        className="p-2 animate-in zoom-in duration-300 transform transition-transform hover:scale-110 cursor-pointer"
                         onDoubleClick={() => onSelect(msg)}
                         {...longPressProps}
                     >
@@ -50,7 +50,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                     </div>
                 ) : (
                     <div
-                        className={`px-5 py-3 rounded-3xl transition-all cursor-pointer select-none animate-super-bounce ${isMe
+                        className={`px-5 py-3 rounded-3xl transition-colors cursor-pointer select-none ${isMe
                             ? `bg-slate-900 text-white rounded-br-none hover:bg-black`
                             : `bg-slate-100 text-slate-800 rounded-bl-none hover:bg-slate-200`
                             }`}

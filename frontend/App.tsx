@@ -244,7 +244,7 @@ const App: React.FC = () => {
 
         <div className="flex-1 overflow-hidden relative">
           {view === 'HOME' && (
-            <div className="h-full flex flex-col animate-super-slide">
+            <div className="h-full flex flex-col">
               <div className="lg:hidden flex-1 overflow-y-auto">
                 <ChatList
                   contacts={sortedContacts}
@@ -272,33 +272,27 @@ const App: React.FC = () => {
           )}
 
           {view === 'CHAT' && activeContact && (
-            <div className="h-full animate-super-slide">
-              <ChatWindow
-                contact={activeContact}
-                user={user}
-                onBack={() => setView('HOME')}
-                hideHeader={true}
-              />
-            </div>
+            <ChatWindow
+              contact={activeContact}
+              user={user}
+              onBack={() => setView('HOME')}
+              hideHeader={true}
+            />
           )}
 
           {view === 'DASHBOARD' && (
-            <div className="h-full animate-super-slide">
-              <Dashboard
-                user={user}
-                onUpdate={updateProfile}
-                onBack={() => setView('HOME')}
-              />
-            </div>
+            <Dashboard
+              user={user}
+              onUpdate={updateProfile}
+              onBack={() => setView('HOME')}
+            />
           )}
 
           {view === 'ADD_CONTACT' && (
-            <div className="h-full animate-super-slide">
-              <AddFriend
-                onAdd={handleAddContact}
-                onBack={() => setView('HOME')}
-              />
-            </div>
+            <AddFriend
+              onAdd={handleAddContact}
+              onBack={() => setView('HOME')}
+            />
           )}
         </div>
 
