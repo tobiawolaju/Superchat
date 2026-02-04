@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Contact } from '../types';
 import { AvatarDisplay } from './Avatar';
+import { rtdb } from '../services/db';
 
 interface AddFriendProps {
   onAdd: (contact: Contact) => void;
@@ -12,6 +13,30 @@ const AddFriend: React.FC<AddFriendProps> = ({ onAdd, onBack }) => {
   const [address, setAddress] = useState('');
   const [username, setUsername] = useState('');
   const [hashingKey, setHashingKey] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleLookup = async (id: string) => {
+    if (id.length < 5) return;
+    setIsSearching(true);
+    try {
+      const userData = await rtdb.get(`users/${id}`);
+      if (userData) {
+        setUsername(userData.username);
+      }
+    } catch (error) {
+      console.error("User lookup failed", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setAddress(val);
+    if (val.length >= 10) {
+      handleLookup(val);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +46,7 @@ const AddFriend: React.FC<AddFriendProps> = ({ onAdd, onBack }) => {
       id: address.trim(),
       username: username.trim(),
       hashingKey: hashingKey.trim(),
-      avatar: 'robohash' // No longer used for display, but kept for type safety
+      avatar: 'robohash'
     };
 
     onAdd(newContact);
@@ -49,12 +74,14 @@ const AddFriend: React.FC<AddFriendProps> = ({ onAdd, onBack }) => {
 
           <div className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Public Identity Key (0x...)</label>
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">
+                Public Identity Key {isSearching && <span className="animate-pulse ml-2 text-slate-300">Searching...</span>}
+              </label>
               <input
                 type="text"
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="0x..."
+                onChange={handleAddressChange}
+                placeholder="Paste UID or Identity Key"
                 className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-mono text-sm text-slate-900 font-bold"
               />
             </div>

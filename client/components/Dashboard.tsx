@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { UserProfile } from '../types';
 import { AvatarDisplay } from './Avatar';
+import { auth } from '../services/firebase';
+import { signOut } from 'firebase/auth';
 
 interface DashboardProps {
   user: UserProfile;
@@ -85,6 +87,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
             className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-black py-4 rounded-full transition-all active:scale-[0.98] uppercase tracking-widest text-xs border-none"
           >
             Confirm Changes
+          </button>
+
+          <button
+            onClick={() => signOut(auth)}
+            className="w-full bg-red-50 hover:bg-red-100 text-red-500 font-black py-4 rounded-full transition-all active:scale-[0.98] uppercase tracking-widest text-xs border-none mt-4"
+          >
+            Logout session
           </button>
         </div>
       </div>

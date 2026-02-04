@@ -8,49 +8,83 @@ import Dashboard from './components/Dashboard';
 import AddFriend from './components/AddFriend';
 import { AvatarDisplay } from './components/Avatar';
 import { rtdb, getChatPath } from './services/db';
+import { auth, googleProvider } from './services/firebase';
+import { onAuthStateChanged, signInWithPopup, User as FirebaseUser } from 'firebase/auth';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [view, setView] = useState<View>('HOME');
   const [activeContact, setActiveContact] = useState<Contact | null>(null);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [isSplashVisible, setIsSplashVisible] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Splash Screen Timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsSplashVisible(false);
     }, 2000);
-
-    const savedUser = localStorage.getItem('super_chat_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    } else {
-      const newUser: UserProfile = {
-        id: generatePublicAddress(),
-        username: `User_${Math.floor(Math.random() * 1000)}`,
-        avatar: 'robohash',
-        hashingKey: 'master_key_' + Math.random().toString(36).substring(7)
-      };
-      localStorage.setItem('super_chat_user', JSON.stringify(newUser));
-      setUser(newUser);
-    }
-
-    const savedContacts = localStorage.getItem('super_chat_contacts');
-    if (savedContacts) {
-      setContacts(JSON.parse(savedContacts));
-    }
-
     return () => clearTimeout(timer);
   }, []);
 
+  // Firebase Auth Observer
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (fUser) => {
+      if (fUser) {
+        setFirebaseUser(fUser);
+
+        // Check if user exists in RTDB
+        const userData = await rtdb.get(`users/${fUser.uid}`);
+
+        if (userData) {
+          setUser(userData);
+        } else {
+          // New User: Generate Keys and Save Profile
+          const newUser: UserProfile = {
+            id: fUser.uid,
+            username: fUser.displayName || `User_${fUser.uid.substring(0, 5)}`,
+            avatar: fUser.photoURL || 'robohash',
+            hashingKey: 'master_key_' + Math.random().toString(36).substring(7)
+          };
+          await rtdb.set(`users/${fUser.uid}`, newUser);
+          setUser(newUser);
+        }
+      } else {
+        setFirebaseUser(null);
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch Contacts from RTDB
+  useEffect(() => {
+    if (!user) return;
+
+    // Listen for contacts updates (simplified, in a real app you'd have a list of contact IDs)
+    const unsubscribe = rtdb.onValue(`users/${user.id}/contacts`, (data) => {
+      if (data) {
+        const contactList = Object.values(data) as Contact[];
+        setContacts(contactList);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user?.id]);
+
+  // Messages Watcher for Last Message Preview
   useEffect(() => {
     if (!user || contacts.length === 0) return;
 
     const unsubscribes = contacts.map(contact => {
       const chatPath = getChatPath(user.id, contact.id);
-      return rtdb.onValue(Path, (messages) => {
+      return rtdb.onValue(chatPath, (messages) => {
         if (messages && messages.length > 0) {
-          const lastMsg = messages[messages.length - 1];
+          const messageArray = Object.values(messages);
+          const lastMsg = messageArray[messageArray.length - 1] as any;
           setContacts(prev => prev.map(c => {
             if (c.id === contact.id) {
               return {
@@ -68,26 +102,32 @@ const App: React.FC = () => {
     return () => unsubscribes.forEach(unsub => unsub());
   }, [user?.id, contacts.length]);
 
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
   const sortedContacts = [...contacts].sort((a, b) => {
     return (b.lastTimestamp || 0) - (a.lastTimestamp || 0);
   });
 
-  const saveContacts = (newContacts: Contact[]) => {
-    setContacts(newContacts);
-    localStorage.setItem('super_chat_contacts', JSON.stringify(newContacts));
-  };
-
-  const updateProfile = (updates: Partial<UserProfile>) => {
+  const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return;
     const updatedUser = { ...user, ...updates };
+    await rtdb.set(`users/${user.id}`, updatedUser);
     setUser(updatedUser);
-    localStorage.setItem('super_chat_user', JSON.stringify(updatedUser));
   };
 
-  const handleAddContact = (contact: Contact) => {
+  const handleAddContact = async (contact: Contact) => {
+    if (!user) return;
     const exists = contacts.find(c => c.id === contact.id);
     if (!exists) {
-      saveContacts([...contacts, contact]);
+      await rtdb.set(`users/${user.id}/contacts/${contact.id}`, contact);
+      // Also add current user to contact's contact list in a real app, 
+      // but keeping it simple for now.
     }
     setView('HOME');
   };
@@ -107,6 +147,23 @@ const App: React.FC = () => {
     );
   }
 
+  if (isLoading) return null;
+
+  if (!firebaseUser) {
+    return (
+      <div className="flex h-[100dvh] w-full flex-col items-center justify-center bg-white p-6 text-center animate-in fade-in duration-500">
+        <h1 className="text-6xl font-chewy font-black text-slate-900 mb-4">Super Yap</h1>
+        <p className="text-slate-400 text-xl max-w-xs mb-10 font-medium">Fast, Hashed, and Minimalist.</p>
+        <button
+          onClick={handleLogin}
+          className="bg-slate-900 hover:bg-black text-white font-chewy text-2xl py-5 px-16 rounded-full transition-all active:scale-95 flex items-center gap-4 border-none shadow-xl"
+        >
+          Login with Google
+        </button>
+      </div>
+    );
+  }
+
   if (!user) return null;
 
   return (
@@ -122,7 +179,7 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <ChatList
             contacts={sortedContacts}
-            onClick={openChat}
+            onChatClick={openChat}
             activeContactId={activeContact?.id}
             isMobile={false}
           />

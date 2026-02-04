@@ -27,7 +27,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
 
   useEffect(() => {
     const unsubscribe = rtdb.onValue(chatPath, (data) => {
-      if (data) setMessages(data);
+      if (data) {
+        const messageArray = Object.values(data) as Message[];
+        setMessages(messageArray);
+      } else {
+        setMessages([]);
+      }
     });
     return () => unsubscribe();
   }, [chatPath]);
