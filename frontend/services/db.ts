@@ -35,15 +35,10 @@ class FirebaseRTDB {
     await update(dbRef, updates);
   }
 
-  // Remove data at path
-  async remove(path: string) {
-    const dbRef = ref(db, path);
-    await remove(dbRef);
-  }
-
   // Remove a message from a list at path
   async removeMessage(path: string, messageId: string) {
-    await this.remove(`${path}/${messageId}`);
+    const dbRef = ref(db, `${path}/${messageId}`);
+    await remove(dbRef);
   }
 
   async get(path: string) {

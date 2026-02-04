@@ -132,15 +132,6 @@ const App: React.FC = () => {
     setView('HOME');
   };
 
-  const handleDeleteContact = async (contactId: string) => {
-    if (!user) return;
-    await rtdb.remove(`users/${user.id}/contacts/${contactId}`);
-    if (activeContact?.id === contactId) {
-      setView('HOME');
-      setActiveContact(null);
-    }
-  };
-
   const openChat = (contact: Contact) => {
     setActiveContact(contact);
     setView('CHAT');
@@ -189,7 +180,6 @@ const App: React.FC = () => {
           <ChatList
             contacts={sortedContacts}
             onChatClick={openChat}
-            onDeleteChat={handleDeleteContact}
             activeContactId={activeContact?.id}
             isMobile={false}
           />
@@ -259,7 +249,6 @@ const App: React.FC = () => {
                 <ChatList
                   contacts={sortedContacts}
                   onChatClick={openChat}
-                  onDeleteChat={handleDeleteContact}
                   activeContactId={activeContact?.id}
                   isMobile={true}
                 />
