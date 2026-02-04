@@ -111,8 +111,44 @@ const App: React.FC = () => {
   };
 
   const sortedContacts = [...contacts].sort((a, b) => {
+    // Show pinned contacts first
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
     return (b.lastTimestamp || 0) - (a.lastTimestamp || 0);
   });
+
+  const handlePinContact = async (contactId: string) => {
+    if (!user) return;
+    const contact = contacts.find(c => c.id === contactId);
+    if (!contact) return;
+
+    // Toggle pinned status
+    const newPinnedStatus = !contact.pinned;
+
+    // Update local state first for immediate feedback
+    setContacts(prev => prev.map(c =>
+      c.id === contactId ? { ...c, pinned: newPinnedStatus } : c
+    ));
+
+    // Update RTDB
+    await rtdb.set(`users/${user.id}/contacts/${contactId}/pinned`, newPinnedStatus);
+  };
+
+  const handleRemoveContact = async (contactId: string) => {
+    if (!user) return;
+    if (window.confirm('Are you sure you want to remove this contact? Chats will be preserved.')) {
+      // Remove from RTDB
+      await rtdb.set(`users/${user.id}/contacts/${contactId}`, null);
+
+      // Local state update handled by RTDB listener usually, but we can do it optimistically
+      setContacts(prev => prev.filter(c => c.id !== contactId));
+
+      if (activeContact?.id === contactId) {
+        setView('HOME');
+        setActiveContact(null);
+      }
+    }
+  };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return;
@@ -180,6 +216,8 @@ const App: React.FC = () => {
           <ChatList
             contacts={sortedContacts}
             onChatClick={openChat}
+            onPinChat={handlePinContact}
+            onRemoveChat={handleRemoveContact}
             activeContactId={activeContact?.id}
             isMobile={false}
           />
@@ -249,6 +287,8 @@ const App: React.FC = () => {
                 <ChatList
                   contacts={sortedContacts}
                   onChatClick={openChat}
+                  onPinChat={handlePinContact}
+                  onRemoveChat={handleRemoveContact}
                   activeContactId={activeContact?.id}
                   isMobile={true}
                 />

@@ -13,6 +13,7 @@ export interface Contact {
   avatar: string; // Can be a URL or 'sprite:INDEX'
   lastMessage?: string;
   lastTimestamp?: number;
+  pinned?: boolean;
 }
 
 export interface Message {
