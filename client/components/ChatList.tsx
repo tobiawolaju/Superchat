@@ -4,6 +4,7 @@ import { Contact } from '../types';
 import { AvatarDisplay } from './Avatar';
 import { formatTimeAgo } from '../services/utils';
 import { decryptMessage } from '../services/crypto';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ChatListProps {
   contacts: Contact[];
@@ -36,40 +37,49 @@ const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, activeContac
         </div>
       )}
 
-      {contacts.map((contact) => (
-        <button
-          key={contact.id}
-          onClick={() => onChatClick(contact)}
-          className={`group flex items-center gap-4 p-4 rounded-full transition-all relative animate-in fade-in slide-in-from-left-4 duration-300 fill-mode-forwards ${activeContactId === contact.id && !isMobile
-            ? 'bg-slate-900 text-white shadow-none'
-            : 'bg-white hover:bg-slate-200 text-slate-600 border-none'
-            }`}
-        >
-          <div className="relative shrink-0">
-            <AvatarDisplay
-              id={contact.id}
-              username={contact.username}
-              avatar={contact.avatar}
-              className={isMobile ? 'w-14 h-14' : 'w-11 h-11'}
-            />
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <div className="flex justify-between items-baseline mb-0.5">
-              <p className={`text-base font-black truncate ${activeContactId === contact.id && !isMobile ? 'text-white' : 'text-slate-900'}`}>
-                {contact.username}
-              </p>
-              {contact.lastTimestamp && (
-                <span className={`text-[10px] font-black uppercase tracking-tighter shrink-0 ml-2 ${activeContactId === contact.id && !isMobile ? 'text-white/50' : 'text-slate-400'}`}>
-                  {formatTimeAgo(contact.lastTimestamp)}
-                </span>
-              )}
+      <AnimatePresence>
+        {contacts.map((contact, index) => (
+          <motion.button
+            layout
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ delay: index * 0.05 }}
+            key={contact.id}
+            onClick={() => onChatClick(contact)}
+            whileHover={{ scale: 1.02, x: 5 }}
+            whileTap={{ scale: 0.98 }}
+            className={`group flex items-center gap-4 p-4 rounded-full transition-all relative ${activeContactId === contact.id && !isMobile
+              ? 'bg-slate-900 text-white shadow-lg'
+              : 'bg-white hover:bg-slate-50 text-slate-600 border-none'
+              }`}
+          >
+            <div className="relative shrink-0">
+              <AvatarDisplay
+                id={contact.id}
+                username={contact.username}
+                avatar={contact.avatar}
+                className={isMobile ? 'w-14 h-14 shadow-sm' : 'w-11 h-11 shadow-sm'}
+              />
             </div>
-            <p className={`text-xs font-bold truncate opacity-80 ${activeContactId === contact.id && !isMobile ? 'text-white/60' : 'text-slate-400'}`}>
-              {renderMessagePreview(contact)}
-            </p>
-          </div>
-        </button>
-      ))}
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex justify-between items-baseline mb-0.5">
+                <p className={`text-base font-black truncate ${activeContactId === contact.id && !isMobile ? 'text-white' : 'text-slate-900'}`}>
+                  {contact.username}
+                </p>
+                {contact.lastTimestamp && (
+                  <span className={`text-[10px] font-black uppercase tracking-tighter shrink-0 ml-2 ${activeContactId === contact.id && !isMobile ? 'text-white/50' : 'text-slate-400'}`}>
+                    {formatTimeAgo(contact.lastTimestamp)}
+                  </span>
+                )}
+              </div>
+              <p className={`text-xs font-bold truncate opacity-80 ${activeContactId === contact.id && !isMobile ? 'text-white/60' : 'text-slate-400'}`}>
+                {renderMessagePreview(contact)}
+              </p>
+            </div>
+          </motion.button>
+        ))}
+      </AnimatePresence>
 
       {contacts.length === 0 && (
         <div className={`py-20 text-center ${isMobile ? 'px-8' : 'px-4'}`}>
