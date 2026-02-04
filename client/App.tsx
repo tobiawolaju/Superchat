@@ -48,7 +48,7 @@ const App: React.FC = () => {
 
     const unsubscribes = contacts.map(contact => {
       const chatPath = getChatPath(user.id, contact.id);
-      return rtdb.onValue(chatPath, (messages) => {
+      return rtdb.onValue(Path, (messages) => {
         if (messages && messages.length > 0) {
           const lastMsg = messages[messages.length - 1];
           setContacts(prev => prev.map(c => {
@@ -101,7 +101,7 @@ const App: React.FC = () => {
     return (
       <div className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-white animate-out fade-out duration-700 fill-mode-forwards">
         <h1 className="text-7xl font-chewy font-black text-slate-900 tracking-tight animate-in zoom-in-75 duration-500 uppercase">
-          SUPER CHAT
+          Super Yap
         </h1>
       </div>
     );
@@ -115,14 +115,14 @@ const App: React.FC = () => {
       <aside className="hidden lg:flex w-80 bg-slate-50 flex-col shrink-0 border-r border-slate-100">
         <div className="h-16 flex items-center px-6">
           <button onClick={() => setView('HOME')} className="font-chewy text-2xl text-slate-900 tracking-wide">
-            Super Chat
+            Super Yap
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <ChatList
             contacts={sortedContacts}
-            onChatClick={openChat}
+            onClick={openChat}
             activeContactId={activeContact?.id}
             isMobile={false}
           />
@@ -159,7 +159,7 @@ const App: React.FC = () => {
               </button>
             )}
             <div>
-              {view === 'HOME' && <h1 className="font-chewy text-2xl text-slate-900">Super Chat</h1>}
+              {view === 'HOME' && <h1 className="font-chewy text-2xl text-slate-900">Super Yap</h1>}
               {view === 'CHAT' && activeContact && (
                 <div className="flex items-center gap-3">
                   <AvatarDisplay id={activeContact.id} username={activeContact.username} className="w-8 h-8" />
