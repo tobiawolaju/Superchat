@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Contact, UserProfile, Message } from '../types';
 import { encryptMessage } from '../services/crypto';
-import { rtdb, getChatPath } from '../services/db';
+import { rtdb, getChatPath, indexConversation } from '../services/db';
 import { AvatarDisplay } from './Avatar';
 import { Sticker } from './Sticker';
 import { MessageOptionsMenu } from './MessageOptionsMenu';
@@ -43,14 +43,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
     }
   }, [messages]);
 
-  const sendMessage = (content: string) => {
+  const sendMessage = async (content: string) => {
     const hashedContent = encryptMessage(content, contact.hashingKey);
     const newMessage = {
       senderId: user.id,
       content: hashedContent,
       timestamp: Date.now(),
     };
-    rtdb.push(chatPath, newMessage);
+    await rtdb.push(chatPath, newMessage);
+    // Ensure conversation is indexed for both users
+    await indexConversation(user.id, contact.id);
   };
 
   const handleSend = (e: React.FormEvent) => {

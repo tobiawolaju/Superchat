@@ -55,3 +55,11 @@ export const getChatPath = (addr1: string, addr2: string) => {
   const sorted = [addr1, addr2].sort();
   return `chats/${sorted[0]}_${sorted[1]}`;
 };
+
+// Helper to index a conversation for both users
+export const indexConversation = async (user1Id: string, user2Id: string) => {
+  const updates: any = {};
+  updates[`users/${user1Id}/conversations/${user2Id}`] = true;
+  updates[`users/${user2Id}/conversations/${user1Id}`] = true;
+  await update(ref(db), updates);
+};
