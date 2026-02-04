@@ -8,11 +8,40 @@ import { decryptMessage } from '../services/crypto';
 interface ChatListProps {
   contacts: Contact[];
   onChatClick: (contact: Contact) => void;
+  onDeleteChat: (contactId: string) => void;
   activeContactId?: string;
   isMobile: boolean;
 }
 
-const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, activeContactId, isMobile }) => {
+const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, onDeleteChat, activeContactId, isMobile }) => {
+  const [showDeleteMenu, setShowDeleteMenu] = React.useState<string | null>(null);
+  const pressTimer = React.useRef<any>(null);
+  const lastTap = React.useRef<number>(0);
+
+  const handleStartPress = (contactId: string) => {
+    pressTimer.current = setTimeout(() => {
+      setShowDeleteMenu(contactId);
+    }, 500);
+  };
+
+  const handleEndPress = () => {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  };
+
+  const handleClick = (contact: Contact) => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    if (now - lastTap.current < DOUBLE_TAP_DELAY) {
+      setShowDeleteMenu(contact.id);
+    } else {
+      onChatClick(contact);
+      setShowDeleteMenu(null);
+    }
+    lastTap.current = now;
+  };
   const renderMessagePreview = (contact: Contact) => {
     if (!contact.lastMessage) return contact.id.substring(0, 16) + '...';
 
@@ -37,38 +66,70 @@ const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, activeContac
       )}
 
       {contacts.map((contact) => (
-        <button
-          key={contact.id}
-          onClick={() => onChatClick(contact)}
-          className={`group flex items-center gap-4 p-4 rounded-full transition-all relative ${activeContactId === contact.id && !isMobile
-            ? 'bg-slate-900 text-white shadow-none'
-            : 'bg-white hover:bg-slate-200 text-slate-600 border-none'
-            }`}
-        >
-          <div className="relative shrink-0">
-            <AvatarDisplay
-              id={contact.id}
-              username={contact.username}
-              avatar={contact.avatar}
-              className={isMobile ? 'w-14 h-14' : 'w-11 h-11'}
-            />
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <div className="flex justify-between items-baseline mb-0.5">
-              <p className={`text-base font-black truncate ${activeContactId === contact.id && !isMobile ? 'text-white' : 'text-slate-900'}`}>
-                {contact.username}
-              </p>
-              {contact.lastTimestamp && (
-                <span className={`text-[10px] font-black uppercase tracking-tighter shrink-0 ml-2 ${activeContactId === contact.id && !isMobile ? 'text-white/50' : 'text-slate-400'}`}>
-                  {formatTimeAgo(contact.lastTimestamp)}
-                </span>
-              )}
+        <div key={contact.id} className="relative">
+          <button
+            onMouseDown={() => handleStartPress(contact.id)}
+            onMouseUp={handleEndPress}
+            onMouseLeave={handleEndPress}
+            onTouchStart={() => handleStartPress(contact.id)}
+            onTouchEnd={handleEndPress}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setShowDeleteMenu(contact.id);
+            }}
+            onClick={() => handleClick(contact)}
+            className={`group w-full flex items-center gap-4 p-4 rounded-full transition-all relative ${activeContactId === contact.id && !isMobile
+              ? 'bg-slate-900 text-white shadow-none'
+              : 'bg-white hover:bg-slate-200 text-slate-600 border-none'
+              } ${showDeleteMenu === contact.id ? 'opacity-50 blur-[2px]' : ''}`}
+          >
+            <div className="relative shrink-0">
+              <AvatarDisplay
+                id={contact.id}
+                username={contact.username}
+                avatar={contact.avatar}
+                className={isMobile ? 'w-14 h-14' : 'w-11 h-11'}
+              />
             </div>
-            <p className={`text-xs font-bold truncate opacity-80 ${activeContactId === contact.id && !isMobile ? 'text-white/60' : 'text-slate-400'}`}>
-              {renderMessagePreview(contact)}
-            </p>
-          </div>
-        </button>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex justify-between items-baseline mb-0.5">
+                <p className={`text-base font-black truncate ${activeContactId === contact.id && !isMobile ? 'text-white' : 'text-slate-900'}`}>
+                  {contact.username}
+                </p>
+                {contact.lastTimestamp && (
+                  <span className={`text-[10px] font-black uppercase tracking-tighter shrink-0 ml-2 ${activeContactId === contact.id && !isMobile ? 'text-white/50' : 'text-slate-400'}`}>
+                    {formatTimeAgo(contact.lastTimestamp)}
+                  </span>
+                )}
+              </div>
+              <p className={`text-xs font-bold truncate opacity-80 ${activeContactId === contact.id && !isMobile ? 'text-white/60' : 'text-slate-400'}`}>
+                {renderMessagePreview(contact)}
+              </p>
+            </div>
+          </button>
+
+          {showDeleteMenu === contact.id && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center p-2 animate-in fade-in zoom-in duration-200">
+              <div className="bg-white shadow-2xl rounded-full flex items-center gap-2 border border-slate-100 p-1">
+                <button
+                  onClick={() => {
+                    onDeleteChat(contact.id);
+                    setShowDeleteMenu(null);
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-colors border-none"
+                >
+                  Remove Chat
+                </button>
+                <button
+                  onClick={() => setShowDeleteMenu(null)}
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-500 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-colors border-none"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       ))}
 
       {contacts.length === 0 && (
