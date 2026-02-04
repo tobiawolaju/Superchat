@@ -43,26 +43,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
     }
   }, [messages]);
 
-  const sendMessage = async (content: string) => {
+  const sendMessage = (content: string) => {
     const hashedContent = encryptMessage(content, contact.hashingKey);
     const newMessage = {
       senderId: user.id,
       content: hashedContent,
       timestamp: Date.now(),
     };
-    await rtdb.push(chatPath, newMessage);
-
-    // Auto-add myself to their contacts so they see the message request
-    // In a real app we might want strict "Message Requests" vs "Chats"
-    // But for this requirement, we just ensure visibility.
-    const myContactInfo: Contact = {
-      id: user.id,
-      username: user.username,
-      avatar: user.avatar,
-      hashingKey: user.hashingKey || "", // Should be there
-      lastTimestamp: Date.now()
-    };
-    await rtdb.set(`users/${contact.id}/contacts/${user.id}`, myContactInfo);
+    rtdb.push(chatPath, newMessage);
   };
 
   const handleSend = (e: React.FormEvent) => {

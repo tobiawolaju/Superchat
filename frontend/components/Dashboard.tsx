@@ -41,19 +41,26 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
             </div>
           </section>
 
-          {/* Display Alias */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Display Alias</label>
-            <input
-              type="text"
-              value={user.username}
-              onChange={(e) => onUpdate({ username: e.target.value })}
-              className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-bold text-base text-slate-700 focus:bg-slate-200"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Display Alias</label>
+              <input
+                type="text"
+                value={user.username}
+                onChange={(e) => onUpdate({ username: e.target.value })}
+                className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-bold text-base text-slate-700 focus:bg-slate-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Master Hash Key</label>
+              <input
+                type="password"
+                value={user.hashingKey}
+                onChange={(e) => onUpdate({ hashingKey: e.target.value })}
+                className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-bold text-base text-slate-700 focus:bg-slate-200"
+              />
+            </div>
           </div>
-
-          {/* Hidden Master Hash Key Input (Removed from UI as requested) */}
-
 
           <div className="p-8 bg-slate-100 rounded-none border-none overflow-hidden">
             <div className="flex flex-col gap-5">
@@ -64,17 +71,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
                 </code>
               </div>
               <button
-                onClick={() => {
-                  const url = `${window.location.origin}?chat=${user.id}`;
-                  navigator.clipboard.writeText(url);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
+                onClick={copyAddress}
                 className={`w-full lg:w-max px-8 py-3 rounded-full font-black transition-all flex items-center justify-center gap-3 text-sm border-none ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white hover:bg-black shadow-none'}`}
               >
-                {copied ? 'Link Copied!' : 'Share Profile'}
+                {copied ? 'Copied' : 'Copy Key'}
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                 </svg>
               </button>
             </div>
@@ -95,7 +97,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
           </button>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

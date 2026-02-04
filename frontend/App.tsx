@@ -75,43 +75,6 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, [user?.id]);
 
-  // Handle Share Link (?chat=USER_ID)
-  useEffect(() => {
-    if (!user) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const chatTargetId = params.get('chat');
-
-    if (chatTargetId && chatTargetId !== user.id) {
-      // Check if already in contacts
-      const existing = contacts.find(c => c.id === chatTargetId);
-      if (existing) {
-        setActiveContact(existing);
-        setView('CHAT');
-        // Clear param
-        window.history.replaceState({}, '', window.location.pathname);
-      } else {
-        // Fetch user data and add
-        rtdb.get(`users/${chatTargetId}`).then((targetUser) => {
-          if (targetUser) {
-            const newContact: Contact = {
-              id: targetUser.id,
-              username: targetUser.username,
-              avatar: targetUser.avatar,
-              hashingKey: targetUser.hashingKey || 'default', // fallback
-              lastTimestamp: Date.now()
-            };
-            handleAddContact(newContact).then(() => {
-              setActiveContact(newContact);
-              setView('CHAT');
-              window.history.replaceState({}, '', window.location.pathname);
-            });
-          }
-        });
-      }
-    }
-  }, [user, contacts]);
-
   // Messages Watcher for Last Message Preview
   useEffect(() => {
     if (!user || contacts.length === 0) return;
