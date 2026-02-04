@@ -51,6 +51,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
       timestamp: Date.now(),
     };
     rtdb.push(chatPath, newMessage);
+
+    // Auto-add myself to their contacts so they see the message immediately
+    // In a real app, you might want to check if it exists first or use a "requests" system,
+    // but for "Super Yap" simplicity, we just push the contact.
+    // We already have 'user' (myself), so we add it to 'users/<contact.id>/contacts/<user.id>'
+    rtdb.set(`users/${contact.id}/contacts/${user.id}`, user);
   };
 
   const handleSend = (e: React.FormEvent) => {

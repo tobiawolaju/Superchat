@@ -36,6 +36,7 @@ const App: React.FC = () => {
 
         // Check if user exists in RTDB
         const userData = await rtdb.get(`users/${fUser.uid}`);
+        let currentUser = userData;
 
         if (userData) {
           setUser(userData);
@@ -49,7 +50,26 @@ const App: React.FC = () => {
           };
           await rtdb.set(`users/${fUser.uid}`, newUser);
           setUser(newUser);
+          currentUser = newUser;
         }
+
+        // Handle Chat Link (?chat=<userId>)
+        const params = new URLSearchParams(window.location.search);
+        const chatWithId = params.get('chat');
+        if (chatWithId && currentUser) {
+          // Fetch the user to chat with
+          const contactUser = await rtdb.get(`users/${chatWithId}`);
+          if (contactUser) {
+            // Add to contacts
+            await rtdb.set(`users/${currentUser.id}/contacts/${contactUser.id}`, contactUser);
+            // Open chat
+            setActiveContact(contactUser);
+            setView('CHAT');
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+
       } else {
         setFirebaseUser(null);
         setUser(null);
