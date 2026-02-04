@@ -17,13 +17,8 @@ const decode = (str: string): string => {
   }
 };
 
-const GLOBAL_CONSTANT_KEY = "SUPER_YAP_GLOBAL_CONSTANT_KEY_2024";
-
-export const encryptMessage = (text: string, _key?: string): string => {
-  // Using GLOBAL_CONSTANT_KEY as requested for "everyone constant" encryption
-  // The _key parameter is kept for signature compatibility but ignored
-  const key = GLOBAL_CONSTANT_KEY;
-
+export const encryptMessage = (text: string, key: string): string => {
+  // Simple XOR-based encryption + Base64 for the "Hashed" effect
   let result = "";
   for (let i = 0; i < text.length; i++) {
     const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
@@ -32,10 +27,7 @@ export const encryptMessage = (text: string, _key?: string): string => {
   return encode(result);
 };
 
-export const decryptMessage = (encoded: string, _key?: string): string => {
-  // Using GLOBAL_CONSTANT_KEY as requested for "everyone constant" encryption
-  const key = GLOBAL_CONSTANT_KEY;
-
+export const decryptMessage = (encoded: string, key: string): string => {
   const decoded = decode(encoded);
   if (decoded === "[Encrypted Message]") return decoded;
 
