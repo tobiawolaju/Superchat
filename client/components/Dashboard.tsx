@@ -41,13 +41,22 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onUpdate, onBack }) => {
             </div>
           </section>
 
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Display Alias</label>
               <input
                 type="text"
                 value={user.username}
                 onChange={(e) => onUpdate({ username: e.target.value })}
+                className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-bold text-base text-slate-700 focus:bg-slate-200"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Master Hash Key</label>
+              <input
+                type="password"
+                value={user.hashingKey}
+                onChange={(e) => onUpdate({ hashingKey: e.target.value })}
                 className="w-full bg-slate-100 border-none p-4 rounded-none outline-none font-bold text-base text-slate-700 focus:bg-slate-200"
               />
             </div>
