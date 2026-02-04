@@ -60,64 +60,20 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  // Fetch Contacts & Dynamic Conversations from RTDB
+  // Fetch Contacts from RTDB
   useEffect(() => {
     if (!user) return;
 
-    // Listen for indexed conversations
-    const unsubscribe = rtdb.onValue(`users/${user.id}/conversations`, async (data) => {
+    // Listen for contacts updates (simplified, in a real app you'd have a list of contact IDs)
+    const unsubscribe = rtdb.onValue(`users/${user.id}/contacts`, (data) => {
       if (data) {
-        const conversationIds = Object.keys(data);
-
-        // Fetch profiles for all conversation partners
-        const profilePromises = conversationIds.map(async (id) => {
-          const profile = await rtdb.get(`users/${id}`);
-          if (profile) {
-            return {
-              id: profile.id,
-              username: profile.username,
-              avatar: profile.avatar,
-              hashingKey: profile.hashingKey || 'default'
-            } as Contact;
-          }
-          return null;
-        });
-
-        const profiles = (await Promise.all(profilePromises)).filter(p => p !== null) as Contact[];
-        setContacts(profiles);
+        const contactList = Object.values(data) as Contact[];
+        setContacts(contactList);
       }
     });
 
     return () => unsubscribe();
   }, [user?.id]);
-
-  // Handle Deep Linking (?chat=PUBLIC_KEY)
-  useEffect(() => {
-    if (!user || isLoading) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const chatWith = params.get('chat');
-
-    if (chatWith && chatWith !== user.id) {
-      const startChat = async () => {
-        const contactProfile = await rtdb.get(`users/${chatWith}`);
-        if (contactProfile) {
-          const contact: Contact = {
-            id: contactProfile.id,
-            username: contactProfile.username,
-            avatar: contactProfile.avatar,
-            hashingKey: contactProfile.hashingKey || 'default'
-          };
-          setActiveContact(contact);
-          setView('CHAT');
-
-          // Clear URL param without reload
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      };
-      startChat();
-    }
-  }, [user?.id, isLoading]);
 
   // Messages Watcher for Last Message Preview
   useEffect(() => {

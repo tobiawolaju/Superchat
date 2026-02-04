@@ -17,25 +17,23 @@ const decode = (str: string): string => {
   }
 };
 
-const MASTER_KEY = "SUPER_YAP_STATIC_KEY_2024";
-
-export const encryptMessage = (text: string, _key: string): string => {
+export const encryptMessage = (text: string, key: string): string => {
   // Simple XOR-based encryption + Base64 for the "Hashed" effect
   let result = "";
   for (let i = 0; i < text.length; i++) {
-    const charCode = text.charCodeAt(i) ^ MASTER_KEY.charCodeAt(i % MASTER_KEY.length);
+    const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
     result += String.fromCharCode(charCode);
   }
   return encode(result);
 };
 
-export const decryptMessage = (encoded: string, _key: string): string => {
+export const decryptMessage = (encoded: string, key: string): string => {
   const decoded = decode(encoded);
   if (decoded === "[Encrypted Message]") return decoded;
 
   let result = "";
   for (let i = 0; i < decoded.length; i++) {
-    const charCode = decoded.charCodeAt(i) ^ MASTER_KEY.charCodeAt(i % MASTER_KEY.length);
+    const charCode = decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length);
     result += String.fromCharCode(charCode);
   }
   return result;
