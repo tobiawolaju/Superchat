@@ -60,6 +60,52 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  // Deep Link Handling (?user=UID)
+  useEffect(() => {
+    if (!user) return; // Wait until logged in
+
+    const params = new URLSearchParams(window.location.search);
+    const targetUserId = params.get('user');
+
+    if (targetUserId && targetUserId !== user.id) {
+      // Remove param from URL without refresh
+      window.history.replaceState({}, '', window.location.pathname);
+
+      const handleDeepLink = async () => {
+        // Check if already in contacts
+        const existingContact = contacts.find(c => c.id === targetUserId);
+
+        if (existingContact) {
+          setActiveContact(existingContact);
+          setView('CHAT');
+        } else {
+          // Fetch and add
+          try {
+            const userData = await rtdb.get(`users/${targetUserId}`);
+            if (userData) {
+              const derivedKey = `shared_hash_${userData.id}`;
+              const newContact: Contact = {
+                id: userData.id,
+                username: userData.username,
+                avatar: userData.avatar,
+                hashingKey: derivedKey
+              };
+
+              await rtdb.set(`users/${user.id}/contacts/${targetUserId}`, newContact);
+              // We rely on the contacts listener to update the state and then we could switch to chat, 
+              // but setting activeContact immediately provides better UX.
+              setActiveContact(newContact);
+              setView('CHAT');
+            }
+          } catch (err) {
+            console.error("Failed to resolve deep link user", err);
+          }
+        }
+      };
+      handleDeepLink();
+    }
+  }, [user?.id, contacts.length]); // Re-run when contacts load to check if we already have them
+
   // Fetch Contacts from RTDB
   useEffect(() => {
     if (!user) return;
@@ -275,6 +321,16 @@ const App: React.FC = () => {
                 className="lg:hidden"
               >
                 <AvatarDisplay id={user.id} username={user.username} className="w-10 h-10" />
+              </button>
+            )}
+            {view === 'DASHBOARD' && (
+              <button
+                onClick={() => setView('HOME')}
+                className="p-2 -mr-2 rounded-full text-slate-400 transition-colors hover:bg-slate-100"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             )}
           </div>
