@@ -10,11 +10,12 @@ interface ChatListProps {
   onChatClick: (contact: Contact) => void;
   onPinChat: (contactId: string) => void;
   onRemoveChat: (contactId: string) => void;
+  onProfileClick: (contact: Contact) => void;
   activeContactId?: string;
   isMobile: boolean;
 }
 
-const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, onPinChat, onRemoveChat, activeContactId, isMobile }) => {
+const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, onPinChat, onRemoveChat, onProfileClick, activeContactId, isMobile }) => {
   const [menuOpen, setMenuOpen] = useState<{ x: number, y: number, contactId: string } | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -84,7 +85,13 @@ const ChatList: React.FC<ChatListProps> = ({ contacts, onChatClick, onPinChat, o
               : 'bg-white hover:bg-slate-200 text-slate-600 border-none'
               } ${contact.pinned ? 'border-2 border-slate-900/10' : ''}`}
           >
-            <div className="relative shrink-0">
+            <div
+              className="relative shrink-0 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onProfileClick(contact);
+              }}
+            >
               <AvatarDisplay
                 id={contact.id}
                 username={contact.username}

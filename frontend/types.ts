@@ -29,4 +29,4 @@ export interface ChatSession {
   messages: Message[];
 }
 
-export type View = 'HOME' | 'CHAT' | 'DASHBOARD' | 'ADD_CONTACT';
+export type View = 'HOME' | 'CHAT' | 'DASHBOARD' | 'ADD_CONTACT' | 'CONTACT_PROFILE';
