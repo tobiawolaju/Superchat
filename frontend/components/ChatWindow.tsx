@@ -51,6 +51,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ contact, user, onBack, hideHead
       timestamp: Date.now(),
     };
     rtdb.push(chatPath, newMessage);
+
+    // Auto-add myself to their contacts so they see the message
+    const myProfileForThem = {
+      id: user.id,
+      username: user.username,
+      avatar: user.avatar,
+      hashingKey: contact.hashingKey // Shared key is symmetric
+    };
+    rtdb.update(`users/${contact.id}/contacts/${user.id}`, myProfileForThem);
   };
 
   const handleSend = (e: React.FormEvent) => {
