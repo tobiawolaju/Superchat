@@ -14,6 +14,13 @@ import { onAuthStateChanged, signInWithPopup, User as FirebaseUser } from 'fireb
 
 const App: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
+
+  // Helper for symmetric key generation
+  const getSharedKey = (id1: string, id2: string) => {
+    const sortedIds = [id1, id2].sort();
+    return `shared_hash_${sortedIds.join('_')}`;
+  };
+
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [view, setView] = useState<View>('HOME');
   const [activeContact, setActiveContact] = useState<Contact | null>(null);
@@ -84,12 +91,12 @@ const App: React.FC = () => {
           try {
             const userData = await rtdb.get(`users/${targetUserId}`);
             if (userData) {
-              const derivedKey = `shared_hash_${userData.id}`;
+              const sharedKey = getSharedKey(user.id, userData.id);
               const newContact: Contact = {
                 id: userData.id,
                 username: userData.username,
                 avatar: userData.avatar,
-                hashingKey: derivedKey
+                hashingKey: sharedKey
               };
 
               await rtdb.set(`users/${user.id}/contacts/${targetUserId}`, newContact);
@@ -208,7 +215,11 @@ const App: React.FC = () => {
     if (!user) return;
     const exists = contacts.find(c => c.id === contact.id);
     if (!exists) {
-      await rtdb.set(`users/${user.id}/contacts/${contact.id}`, contact);
+      // Ensure key is symmetric
+      const sharedKey = getSharedKey(user.id, contact.id);
+      const contactWithSharedKey = { ...contact, hashingKey: sharedKey };
+
+      await rtdb.set(`users/${user.id}/contacts/${contact.id}`, contactWithSharedKey);
       // Also add current user to contact's contact list in a real app, 
       // but keeping it simple for now.
     }

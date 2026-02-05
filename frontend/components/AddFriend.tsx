@@ -73,11 +73,6 @@ const AddFriend: React.FC<AddFriendProps> = ({ onAdd, onBack }) => {
       <div className="w-full max-w-2xl mx-auto px-6 py-10 lg:py-16">
         <div className="mb-10">
           <div className="flex items-center gap-4 mb-4">
-            <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-slate-100 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
             <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Add Friend</h2>
           </div>
           <p className="text-sm text-slate-400 font-bold mt-1">Connect with their identity key to start chatting.</p>
